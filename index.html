@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>طبيّة | تسجيل الدخول</title>
+<meta name="theme-color" content="#14304A">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.auth-footer-links{
+  margin-top:30px; padding-top:20px; border-top:1px solid var(--line);
+  display:flex; gap:16px; justify-content:center;
+}
+.admin-link-btn{
+  padding:12px 24px; background:var(--ink); color:#fff; border:none;
+  border-radius:var(--radius-md); font-weight:700; cursor:pointer; text-decoration:none;
+  display:inline-block; transition:.2s ease;
+}
+.admin-link-btn:hover{ transform:translateY(-2px); box-shadow:0 4px 12px rgba(20,48,74,0.2); }
+.online-users{
+  position:fixed; top:20px; left:20px; background:var(--surface); padding:16px 20px;
+  border-radius:var(--radius-md); box-shadow:var(--shadow); z-index:100; min-width:180px;
+}
+.online-users-count{
+  font-size:1.8rem; font-weight:900; color:var(--accent);
+}
+.online-users-label{
+  font-size:.9rem; color:var(--ink-soft); margin-top:4px;
+}
+.live-indicator{
+  display:inline-block; width:8px; height:8px; background:#3FA796;
+  border-radius:50%; margin-right:6px; animation:pulse 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="online-users">
+  <div>
+    <span class="live-indicator"></span>
+    <span class="online-users-count" id="onlineUsersCount">0</span>
+  </div>
+  <div class="online-users-label">مستخدم متصل</div>
+</div>
+
+<div class="auth-wrap">
+
+  <button class="lang-pill" id="langToggle">
+    <span>🌐</span> <span id="langLabel">العربية</span>
+  </button>
+
+  <div class="auth-hero">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="32" fill="#14304A"/>
+      <path d="M32 18c-4 0-6 2.5-9 2.5-3.2 0-5-2-5 4 0 8 3 18 6 18 2.4 0 2.6-6 4-6.5.9-.3 1.6 0 2.5 0h3c.9 0 1.6-.3 2.5 0 1.4.5 1.6 6.5 4 6.5 3 0 6-10 6-18 0-6-1.8-4-5-4-3 0-5-2.5-9-2.5Z" fill="#FBF9F6"/>
+    </svg>
+    <h1 class="auth-title" data-i18n="welcome">أهلاً بعودتك!</h1>
+    <p class="auth-sub" data-i18n="subtitle">سجّل دخولك لمتابعة محاضراتك وتفاعلك اليومي في طبيّة.</p>
+  </div>
+
+  <!-- Social / provider auth -->
+  <div id="providerButtons">
+    <button class="auth-btn" id="btnWhatsapp">
+      <span data-i18n="viaWhatsapp">دخول عن طريق الواتساب</span>
+      <span class="glyph">💬</span>
+    </button>
+    <button class="auth-btn" id="btnGoogle">
+      <span data-i18n="viaGoogle">دخول عن طريق Google</span>
+      <span class="glyph">🇬</span>
+    </button>
+    <button class="auth-btn" id="btnEmail">
+      <span data-i18n="viaEmail">دخول عن طريق البريد الالكتروني</span>
+      <span class="glyph">✉️</span>
+    </button>
+    <button class="auth-btn" id="btnApple">
+      <span data-i18n="viaApple">دخول عن طريق Apple</span>
+      <span class="glyph"></span>
+    </button>
+  </div>
+
+  <!-- Email form, hidden until "email" chosen -->
+  <form id="emailForm" style="display:none;">
+    <div class="field">
+      <label data-i18n="emailLabel">البريد الالكتروني</label>
+      <input type="email" id="emailInput" required placeholder="name@example.com">
+    </div>
+    <div class="field">
+      <label data-i18n="passLabel">كلمة السر</label>
+      <input type="password" id="passInput" required placeholder="••••••••">
+    </div>
+    <div class="field" id="nameFields" style="display:none;">
+      <label data-i18n="nameLabel">الاسم الكامل</label>
+      <input type="text" id="nameInput" placeholder="عبدالله فاضل عبد عمران">
+    </div>
+    <button type="submit" class="primary-btn" id="emailSubmit" data-i18n="login">دخول</button>
+    <button type="button" class="ghost-link-btn" id="toggleMode" data-i18n="noAccountShort">ليس لديك حساب؟ أنشئ حساب جديد</button>
+    <button type="button" class="ghost-link-btn" id="backToProviders" data-i18n="back">رجوع</button>
+  </form>
+
+  <p class="auth-footer">
+    <span data-i18n="noAccount">ليس لديك حساب؟</span>
+    <a href="#" class="create-link" id="openCreate" data-i18n="createAccount">افتح حساب جديد</a>
+  </p>
+
+  <div class="auth-footer-links">
+    <a href="app.html" class="admin-link-btn">👨‍🎓 دخول الطالب</a>
+    <a href="admin.html" class="admin-link-btn" style="background:var(--warn);">👨‍💼 دخول الإدارة</a>
+  </div>
+
+  <p class="legal">
+    <span data-i18n="legalPre">باستخدامك هذا التطبيق فإنك توافق على</span>
+    <a href="#" data-i18n="terms">شروط الاستخدام</a> <span data-i18n="and">و</span>
+    <a href="#" data-i18n="privacy">اتفاقية الخصوصية</a>
+  </p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="recaptcha-container"></div>
+<script type="module" src="js/firebase-client.js"></script>
+<script src="js/i18n.js" defer></script>
+<script src="js/auth-page.js" defer></script>
+<script src="js/online-users.js" defer></script>
+</body>
+</html>
