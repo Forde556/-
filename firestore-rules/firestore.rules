@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.is_admin == true;
+    }
+
+    // ADMIN MANAGEMENT
+    match /admin_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // Anyone signed in can read the content library
+    match /subjects/{subjectId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin(); // only admins can create/edit
+    }
+    match /lectures/{lectureId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    match /qr_sessions/{sessionId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // Profiles: readable by any signed-in user (usernames are public-ish),
+    // writable only by the owner (or admin)
+    match /profiles/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Streaks: owner only
+    match /streaks/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Activity log: owner can create and read their own entries
+    match /activity_log/{entryId} {
+      allow create: if request.auth != null && request.resource.data.user_id == request.auth.uid;
+      allow read: if request.auth != null && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // Saved items: owner-only CRUD
+    match /saved_items/{itemId} {
+      allow read, delete: if request.auth != null && resource.data.user_id == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.user_id == request.auth.uid;
+      allow update: if false;
+    }
+
+    // Attendance: owner can create/read their own scan record, admin can read all
+    match /attendance_records/{recordId} {
+      allow create: if request.auth != null && request.resource.data.user_id == request.auth.uid;
+      allow read: if request.auth != null && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+  }
+}
