@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>طبيّة | لوحة التحكم</title>
+<meta name="theme-color" content="#14304A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin-style.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <svg class="brand-mark" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="32" fill="#14304A"/>
+        <path d="M32 18c-4 0-6 2.5-9 2.5-3.2 0-5-2-5 4 0 8 3 18 6 18 2.4 0 2.6-6 4-6.5.9-.3 1.6 0 2.5 0h3c.9 0 1.6-.3 2.5 0 1.4.5 1.6 6.5 4 6.5 3 0 6-10 6-18 0-6-1.8-4-5-4-3 0-5-2.5-9-2.5Z" fill="#FBF9F6"/>
+      </svg>
+      <span>لوحة التحكم</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-link active" data-page="dashboard">📊 الرئيسية</a>
+      <a class="nav-link" data-page="subjects">📚 المواد</a>
+      <a class="nav-link" data-page="lectures">🎓 المحاضرات</a>
+      <a class="nav-link" data-page="users">👥 المستخدمون</a>
+      <a class="nav-link" data-page="attendance">✓ الحضور</a>
+      <a class="nav-link" data-page="analytics">📈 الإحصائيات</a>
+      <a class="nav-link" data-page="settings">⚙️ الإعدادات</a>
+    </nav>
+    <button class="logout-btn" id="adminLogout">🚪 ��سجيل الخروج</button>
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="admin-main">
+    
+    <!-- TOP BAR -->
+    <div class="admin-topbar">
+      <h1 class="page-title" id="pageTitle">لوحة التحكم الرئيسية</h1>
+      <div class="admin-user-info">
+        <span id="adminName">المسؤول</span>
+        <button class="admin-avatar" id="adminAvatar">ط</button>
+      </div>
+    </div>
+
+    <!-- ============ PAGE: DASHBOARD ============ -->
+    <section class="admin-page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <div class="stat-label">عدد المستخدمين</div>
+            <div class="stat-value" id="totalUsers">0</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">📚</div>
+          <div class="stat-content">
+            <div class="stat-label">عدد المواد</div>
+            <div class="stat-value" id="totalSubjects">0</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-content">
+            <div class="stat-label">عدد المحاضرات</div>
+            <div class="stat-value" id="totalLectures">0</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-content">
+            <div class="stat-label">النشاط اليوم</div>
+            <div class="stat-value" id="todayActivity">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>النشاط اليومي (آخر 7 أيام)</h3>
+          <canvas id="activityChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>توزيع المستخدمين</h3>
+          <canvas id="usersChart"></canvas>
+        </div>
+      </div>
+
+      <div class="firebase-status">
+        <h3>🔥 حالة الاتصال بـ Firebase</h3>
+        <div id="firebaseStatus" class="status-box">
+          <div class="status-indicator loading"></div>
+          <span>جاري التحقق...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: SUBJECTS ============ -->
+    <section class="admin-page" id="page-subjects">
+      <div class="page-header">
+        <h2>إدارة المواد</h2>
+        <button class="btn btn-primary" id="addSubjectBtn">+ إضافة مادة</button>
+      </div>
+
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>الرمز</th>
+              <th>اسم المادة</th>
+              <th>اللون</th>
+              <th>الترتيب</th>
+              <th>عدد المحاضرات</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="subjectsTable">
+            <!-- injected by admin.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: LECTURES ============ -->
+    <section class="admin-page" id="page-lectures">
+      <div class="page-header">
+        <h2>إدارة المحاضرات</h2>
+        <button class="btn btn-primary" id="addLectureBtn">+ إضافة محاضرة</button>
+      </div>
+
+      <div class="filters-row">
+        <select id="lectureFilter" class="filter-select">
+          <option value="">كل المواد</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>عنوان المحاضرة</th>
+              <th>المادة</th>
+              <th>الرقم</th>
+              <th>المدة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="lecturesTable">
+            <!-- injected by admin.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: USERS ============ -->
+    <section class="admin-page" id="page-users">
+      <div class="page-header">
+        <h2>إدارة المستخدمين</h2>
+        <input type="search" id="userSearch" class="search-input" placeholder="البحث عن مستخدم...">
+      </div>
+
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>الاسم</th>
+              <th>اسم المستخدم</th>
+              <th>البريد الالكتروني</th>
+              <th>السنة الدراسية</th>
+              <th>تاريخ التسجيل</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable">
+            <!-- injected by admin.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: ATTENDANCE ============ -->
+    <section class="admin-page" id="page-attendance">
+      <div class="page-header">
+        <h2>إدارة الحضور</h2>
+        <button class="btn btn-primary" id="newSessionBtn">+ جلسة جديدة</button>
+      </div>
+
+      <div class="filters-row">
+        <input type="date" id="attendanceDate" class="filter-select">
+      </div>
+
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>اسم الجلسة</th>
+              <th>النوع</th>
+              <th>الوقت</th>
+              <th>عدد الحاضرين</th>
+              <th>رمز QR</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTable">
+            <!-- injected by admin.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: ANALYTICS ============ -->
+    <section class="admin-page" id="page-analytics">
+      <div class="page-header">
+        <h2>الإحصائيات والتحليلات</h2>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h3>أكثر المحاضرات مشاهدة</h3>
+          <div id="topLectures" class="analytics-list"></div>
+        </div>
+        <div class="analytics-card">
+          <h3>أكثر الطلاب تفاعلاً</h3>
+          <div id="topStudents" class="analytics-list"></div>
+        </div>
+        <div class="analytics-card">
+          <h3>معدل الحضور</h3>
+          <div id="attendanceRate" class="analytics-stat">-</div>
+        </div>
+        <div class="analytics-card">
+          <h3>متوسط الخطوط</h3>
+          <div id="avgStreak" class="analytics-stat">-</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: SETTINGS ============ -->
+    <section class="admin-page" id="page-settings">
+      <div class="page-header">
+        <h2>الإعدادات</h2>
+      </div>
+
+      <div class="settings-section">
+        <h3>إعدادات التطبيق</h3>
+        <div class="setting-item">
+          <label>اسم التطبيق</label>
+          <input type="text" id="appName" value="طبيّة">
+        </div>
+        <div class="setting-item">
+          <label>الوصف</label>
+          <textarea id="appDesc" placeholder="وصف التطبيق">منصة تعليمية لطلاب طب الأسنان</textarea>
+        </div>
+        <button class="btn btn-primary" id="saveSettingsBtn">💾 حفظ الإعدادات</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>إدارة البيانات</h3>
+        <button class="btn btn-secondary" id="exportDataBtn">📥 تصدير البيانات</button>
+        <button class="btn btn-danger" id="clearCacheBtn">🗑️ مسح الذاكرة المؤقتة</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>معلومات Firebase</h3>
+        <div class="info-box">
+          <p><strong>مشروع Firebase:</strong> <span id="fbProject">ppo32-dbe59</span></p>
+          <p><strong>قاعدة البيانات:</strong> <span id="fbDB">Firestore</span></p>
+          <p><strong>حالة الاتصال:</strong> <span id="fbConnection">جاري التحقق...</span></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="subjectModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2>إضافة/تعديل مادة</h2>
+    <form id="subjectForm">
+      <input type="hidden" id="subjectId">
+      <div class="form-group">
+        <label>اسم المادة</label>
+        <input type="text" id="subjectTitle" required>
+      </div>
+      <div class="form-group">
+        <label>الرمز (Emoji)</label>
+        <input type="text" id="subjectIcon" placeholder="🦷" maxlength="2">
+      </div>
+      <div class="form-group">
+        <label>اللون</label>
+        <input type="color" id="subjectColor" value="#14304A">
+      </div>
+      <div class="form-group">
+        <label>الترتيب</label>
+        <input type="number" id="subjectOrder" min="1">
+      </div>
+      <button type="submit" class="btn btn-primary">حفظ</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="lectureModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2>إضافة/تعديل محاضرة</h2>
+    <form id="lectureForm">
+      <input type="hidden" id="lectureId">
+      <div class="form-group">
+        <label>المادة</label>
+        <select id="lectureSubject" required></select>
+      </div>
+      <div class="form-group">
+        <label>عنوان المحاضرة</label>
+        <input type="text" id="lectureTitle" required>
+      </div>
+      <div class="form-group">
+        <label>رقم المحاضرة</label>
+        <input type="number" id="lectureNumber" min="1">
+      </div>
+      <div class="form-group">
+        <label>الوصف</label>
+        <textarea id="lectureDesc"></textarea>
+      </div>
+      <div class="form-group">
+        <label>رابط الفيديو</label>
+        <input type="url" id="lectureVideo" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label>المدة (دقائق)</label>
+        <input type="number" id="lectureDuration" min="1">
+      </div>
+      <button type="submit" class="btn btn-primary">حفظ</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="sessionModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2>إنشاء جلسة حضور</h2>
+    <form id="sessionForm">
+      <div class="form-group">
+        <label>اسم الجلسة</label>
+        <input type="text" id="sessionTitle" placeholder="محاضرة تشريح - حضور" required>
+      </div>
+      <div class="form-group">
+        <label>نوع الجلسة</label>
+        <select id="sessionType">
+          <option value="lecture">محاضرة</option>
+          <option value="exam">امتحان</option>
+          <option value="lab">معمل</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>المدة (دقائق)</label>
+        <input type="number" id="sessionDuration" value="60" min="5">
+      </div>
+      <button type="submit" class="btn btn-primary">إنشاء الجلسة</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script type="module" src="js/firebase-client.js"></script>
+<script src="js/admin.js" defer></script>
+</body>
+</html>
